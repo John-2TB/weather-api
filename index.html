@@ -2,11 +2,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GeoInfo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <title>AETHERIS</title>
 </head>
 <body>
-  <input type="text" placeholder="Search for a city" id="location">
-  <button id="search">Search</button>
+  <header>
+    <video autoplay muted loop playsinline>
+      <source src="./public/sunny.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <h1>AETHERIS</h1>
+      <p>Discover information about the world around you</p>
+      <div class="search-container">
+        <input type="text" placeholder="Search for a city..." id="location">
+        <button id="search">Search</button>
+      </div>
+    </div>
+  </header>
 
   <script src="script.js"></script>
 </body>
