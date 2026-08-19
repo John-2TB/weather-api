@@ -176,7 +176,7 @@ Some features I would like to explore in future versions include:
 Frontend Developer | JavaScript Developer
 
 * GitHub: https://github.com/John-2TB
-* LinkedIn: Add your LinkedIn profile URL here
+* LinkedIn: https://linkedin.com/in/john-koto
 
 ---
 
