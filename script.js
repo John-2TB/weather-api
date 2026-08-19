@@ -6,7 +6,7 @@ const geoLocationApi = 'https://geocoding-api.open-meteo.com/v1/search';
 // ====================================
 const main = document.querySelector('.main');
 const headerVideo = document.querySelector('#header-video');
-const requestedLocation = document.querySelector('#location');
+const requestedLocation = document.querySelector('#requested-location');
 const searchButton = document.querySelector('#search');
 const temperatureDisplay = document.querySelector('#temperature');
 const apparentTemperatureDisplay = document.querySelector('#apparent-temperature');
@@ -22,28 +22,29 @@ const timezoneDisplay = document.querySelector('#timezone');
 const population = document.querySelector('#population');
 const locationDisplay = document.querySelector('#locationDisplay');
 const suggestions = document.querySelector('#suggestions');
+const cityLocation = document.querySelector('#location');
+const loaderContainer = document.querySelector('.loader-container');
+const welcomeMessage = document.querySelector('.welcome-message');
 
 
-
+let searchResults = [];
 
 // ====================================
 // Event Listner
 // ====================================
-searchButton.addEventListener('click', getLocationInsights);
+requestedLocation.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        suggestions.innerHTML = ``;
+        suggestions.style.display = 'block';
+        getLocationInsights(searchResults[0]);
+        console.log(`${e.key} was pressed`)
+      }
+    });
 
 requestedLocation.addEventListener('input', () => {
   console.log(`${requestedLocation.value}`)
   searchLocation();
 });
-
-requestedLocation.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter'){
-    searchLocation()
-    // getLocationInsights();
-    console.log(`${e.key} was pressed`)
-  }
-});
-
 
 // ====================================
 // Functions
@@ -51,6 +52,7 @@ requestedLocation.addEventListener('keydown', (e) => {
 
 // Search Function
 async function searchLocation() {
+
   if(requestedLocation.value.trim() === ''){
     suggestions.innerHTML = ``;
     suggestions.style.display = 'none';
@@ -68,6 +70,8 @@ async function searchLocation() {
     }
 
     const data = await response.json();
+
+    searchResults = data.results;
 
     suggestions.innerHTML = ``;
     suggestions.style.display = 'block';
@@ -88,6 +92,7 @@ async function searchLocation() {
       });
 
       suggestions.appendChild(div);
+
     });
   } catch (error) {
     console.log(`An error occured: ${error}`);
@@ -96,20 +101,26 @@ async function searchLocation() {
 
 // Location function
 async function getLocationInsights(data) {
-  
+  loaderContainer.style.display = 'flex';
+  welcomeMessage.style.display = 'none';
+  locationDisplay.style.display = 'block';
+  document.querySelector('.info-section').style.display = 'grid';
+
   try {
     locationDisplay.innerHTML = `
       <span></span> ${data.name}, ${data.country}
     `;
+    coordinatesDisplay.innerHTML = `${data.latitude}<sup>&deg;</sup>, ${data.longitude}<sup>&deg;</sup>`;
+    elevationDisplay.textContent = `Elevation: ${data.elevation}`;
+    cityLocation.textContent = `${data.name}, ${data.country}`;
+    population.textContent = `Population: ${data.population}`
 
-    console.log(data.name);
-    console.log(data.latitude);
-    console.log(data.longitude);
-
-    getWeatherInfo(data.latitude, data.longitude)
+    await getWeatherInfo(data.latitude, data.longitude)
 
   } catch (error) {
     console.log(`An error occured: ${error}`);
+  } finally {
+    loaderContainer.style.display = 'none';
   }
 };
 
@@ -132,12 +143,14 @@ async function getWeatherInfo(latitude, longitude) {
 
     temperatureDisplay.innerHTML = `${data.current.temperature_2m}<sup>&deg;C</sup>`;
     apparentTemperatureDisplay.innerHTML = `Feels like ${data.current.apparent_temperature}<sup>&deg;C</sup>`;
-    humidityDisplay.textContent = `${data.current.relative_humidity_2m}%`;
+    humidityDisplay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255, 255, 255, 0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet-icon lucide-droplet"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg> ${data.current.relative_humidity_2m}%`;
     dewPointDisplay.innerHTML = `${data.current.dew_point_2m}<sup>&deg;C</sup>`;
-    windDisplay.textContent = `${data.current.wind_speed_10m} km/h`;
+    windDisplay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wind-icon lucide-wind"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/></svg> ${data.current.wind_speed_10m} km/h`;
     windDirectionDisplay.innerHTML = `${data.current.wind_direction_10m}<sup>&deg;</sup>`;
-    pressureDisplay.textContent = `${data.current.pressure_msl} hPa`;
-    visibilityDisplay.textContent = `${data.current.visibility} m`;
+    pressureDisplay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg> ${data.current.pressure_msl} hPa`;
+    visibilityDisplay.textContent = `${data.current.visibility / 1000} Km`;
+
+    timezoneDisplay.textContent = `${data.timezone}`
 
   } catch (error) {
     console.log(`An error occured: ${error}`);

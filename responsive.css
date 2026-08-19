@@ -1,0 +1,34 @@
+@media (max-width: 425px) {
+  #suggestions{
+    width: 95%;
+  }
+
+  .info-section{
+    grid-template-columns: 1fr;
+  }
+
+  .current-weather-info{
+    flex-direction: column;
+  }
+
+  footer{
+    gap: 12px;
+    flex-direction: column;
+  }
+}
+
+
+@media (max-width: 768px) {
+  /* .info-section{
+    grid-template-columns: 1fr;
+  } */
+
+   .current-weather-info{
+    flex-direction: column;
+  }
+
+  footer{
+    gap: 12px;
+    flex-direction: column;
+  }
+}

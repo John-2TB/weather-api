@@ -5,9 +5,16 @@
 }
 
 body{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: #0a192f;
   color: #F8FAFC;
   font-family: 'Sora', sans-serif;
+}
+
+a{
+  color: inherit;
 }
 
 sup{
@@ -60,14 +67,18 @@ header video{
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
 }
 
 .hero-content h1{
   font-size: clamp(32px, 4vw, 46px);
 }
 
+.hero-content p{
+  font-size: clamp(12px, 3vw, 24px);
+}
+
 .search-container{
+  margin-top: 12px;
   width: 275px;
 }
 
@@ -83,25 +94,6 @@ header video{
   font-weight: bold;
 }
 
-.search-container button{
-  position: absolute;
-  transform: translateY(3px);
-  right: 66px;
-  padding: 6px 8px;
-  font-size: 14px;
-  font-weight: bold;
-  border: none;
-  background: #0d65e9;
-  color: #F8FAFC;
-  border-radius: 18px;
-  transition: all 0.2s ease;
-}
-
-.search-container button:hover{
-  cursor: pointer;
-  background: #0948a7;
-}
-
 #suggestions{
   background: rgba(255, 255, 255, 0.4);
   color: #0a192f;
@@ -110,7 +102,7 @@ header video{
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
   position: absolute;
-  width: 70%;
+  width: 45%;
   max-height: 350px;
   overflow-y: auto;
 }
@@ -121,7 +113,7 @@ header video{
 
 #suggestions div{
   padding: 10px 90px 10px 15px;
-  border-bottom: 1px solid #0d65e9;
+  border-bottom: 1px solid #0a192f;
 }
 
 #suggestions div:first-child{
@@ -144,13 +136,15 @@ main{
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex: 1;
 }
 
-main h2{
-  padding: 24px;
+#locationDisplay{
+  display: none;
+  padding-bottom: 24px;
 }
 
-main h2 span{
+#locationDisplay span{
   display: inline-block;
   width: 15px;
   height: 15px;
@@ -169,10 +163,27 @@ main h2 span{
   }
 }
 
+main{
+  flex-grow: 1;
+}
+
+.welcome-message{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-message p{
+  font-size: clamp(10px, 2vw, 24px);
+}
+
 .info-section{
-  display: grid;
+  display: none;
   grid-template-columns: 2fr 1fr;
   gap: 10px;
+  align-items: start;
+  padding-bottom: 16px;
 }
 
 .info-section section{
@@ -206,14 +217,33 @@ main h2 span{
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   gap: 12px;
 }
 
 .city-insight-info div{
   background: #0a192f;
-  padding: 15px 10px;
+  padding: 10px 10px;
   border-radius: 8px;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+}
+
+.city-insight-info div svg{
+  margin-top: 6px;
+}
+
+.city-insight-info div div{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  gap: 6px;
+}
+
+#elevation, #timezone{
+  color: rgba(255, 255, 255, 0.6);
 }
 
 #temperature{
@@ -226,9 +256,65 @@ main h2 span{
 }
 
 #humidity, #dew-point, #pressure, #visibility, #wind, #direction{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
   font-size: clamp(16px, 4vw, 20px);
+  color: rgba(255, 255, 255, 0.9);
 } 
 
 #dew-point, #visibility, #direction, #apparent-temperture{
   color: rgba(255, 255, 255, 0.6);
+}
+
+footer{
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 2px solid grey;
+  padding: 15px 15px;
+}
+
+footer div:nth-child(2) p{
+  font-size: clamp(10px, 2vw, 24px);
+}
+
+footer div:nth-child(3){
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.loader-container {
+  position: fixed;  
+  top: 0;
+  left: 0;
+  width: 100%;       
+  height: 100vh;    
+  display: none;       
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;    
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #e0e0e0;
+  border-top: 5px solid #3498db; 
+  border-radius: 50%;  
+  animation: spin 1s linear infinite;
+}
+
+/* The Animation Logic */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);     /* Starting position */
+  }
+  100% {
+    transform: rotate(360deg);   /* Completes a full spin */
+  }
 }
