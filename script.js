@@ -29,6 +29,17 @@ const welcomeMessage = document.querySelector('.welcome-message');
 
 let searchResults = [];
 
+headerVideo.muted = true;
+headerVideo.playsInline = true;
+
+headerVideo.play()
+  .then(() => {
+    console.log('Video started automatically');
+  })
+  .catch(error => {
+    console.log('Autoplay failed:', error);
+  });
+
 // ====================================
 // Event Listner
 // ====================================
@@ -106,13 +117,13 @@ async function searchLocation() {
 
     });
   } catch (error) {
-    if (error instanceof TypeError) {
-      suggestions.textContent =
-        '⚠️ Unable to connect. Please check your internet connection and try again.';
-      suggestions.style.width = '60%';
+    // if (error instanceof TypeError) {
+    //   suggestions.textContent =
+    //     '⚠️ Unable to connect. Please check your internet connection and try again.';
+    //   suggestions.style.width = '60%';
 
-      return;
-    }
+    //   return;
+    // }
 
     console.log(`An error occured: ${error}`);
   }
