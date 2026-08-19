@@ -66,6 +66,16 @@ async function searchLocation() {
     const response = await fetch(`${geoLocationApi}?${params}`);
 
     if(!response.ok){
+      if (response.status === 400){
+        throw new Error('The requested place is invalid.')
+      } else if (response.status === 403){
+        throw new Error('Unable to access weather data right now.')
+      } else if (response.status === 429){
+        throw new Error('Too many requests. Please try again later.')
+      } else if(response.status >= 500){
+        throw new Error('Open Meteo Geocoding server is having trouble right now. Please try again later.')
+      }
+
       throw new Error('Something went wrong. Please try again later.');
     }
 
@@ -75,6 +85,7 @@ async function searchLocation() {
 
     suggestions.innerHTML = ``;
     suggestions.style.display = 'block';
+    suggestions.style.width = '45%';
 
     data.results.forEach((item) => {
 
@@ -95,6 +106,14 @@ async function searchLocation() {
 
     });
   } catch (error) {
+    if (error instanceof TypeError) {
+      suggestions.textContent =
+        '⚠️ Unable to connect. Please check your internet connection and try again.';
+      suggestions.style.width = '60%';
+
+      return;
+    }
+
     console.log(`An error occured: ${error}`);
   }
 }
