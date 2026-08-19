@@ -10,6 +10,10 @@ body{
   font-family: 'Sora', sans-serif;
 }
 
+sup{
+  font-size: 14px;
+}
+
 header{
   position: relative;
   width: 100%;
@@ -64,7 +68,7 @@ header video{
 }
 
 .search-container{
-  padding: 8px 0 0;
+  width: 275px;
 }
 
 .search-container input{
@@ -82,7 +86,7 @@ header video{
 .search-container button{
   position: absolute;
   transform: translateY(3px);
-  right: 38px;
+  right: 66px;
   padding: 6px 8px;
   font-size: 14px;
   font-weight: bold;
@@ -96,6 +100,43 @@ header video{
 .search-container button:hover{
   cursor: pointer;
   background: #0948a7;
+}
+
+#suggestions{
+  background: rgba(255, 255, 255, 0.4);
+  color: #0a192f;
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  position: absolute;
+  width: 70%;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+#suggestions::-webkit-scrollbar{
+  display: none;
+}
+
+#suggestions div{
+  padding: 10px 90px 10px 15px;
+  border-bottom: 1px solid #0d65e9;
+}
+
+#suggestions div:first-child{
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+}
+#suggestions div:last-child{
+  padding-bottom: 4px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+#suggestions div:hover{
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 main{
@@ -146,10 +187,13 @@ main h2 span{
   margin-bottom: 15px;
 }
 
+.weather-info div{
+  margin-top: 32px;
+}
+
 .current-weather-info{
   display: flex;
   gap: 35px;
-
 }
 
 .city-section h3{
@@ -158,8 +202,33 @@ main h2 span{
   margin-bottom: 15px;
 }
 
+.city-insight-info{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
 .city-insight-info div{
   background: #0a192f;
   padding: 15px 10px;
   border-radius: 8px;
+}
+
+#temperature{
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: bold;
+}
+
+#apparent-temperature{
+  margin-top: 12px;
+}
+
+#humidity, #dew-point, #pressure, #visibility, #wind, #direction{
+  font-size: clamp(16px, 4vw, 20px);
+} 
+
+#dew-point, #visibility, #direction, #apparent-temperture{
+  color: rgba(255, 255, 255, 0.6);
 }

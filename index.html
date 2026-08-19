@@ -10,9 +10,7 @@
 </head>
 <body>
   <header>
-    <video autoplay muted loop playsinline>
-      <source src="./public/sunny.mp4" type="video/mp4">
-    </video>
+    <video autoplay muted loop playsinline src="./public/sunny.mp4" id="header-video"></video>
 
     <div class="hero-overlay"></div>
 
@@ -22,12 +20,17 @@
       <div class="search-container">
         <input type="text" placeholder="Search for a city..." id="location">
         <button id="search">Search</button>
+        <div id="suggestions">
+
+          
+
+        </div>
       </div>
     </div>
   </header>
 
-  <main>
-    <h2><span></span> City, Country</h2>
+  <main class="main">
+    <h2 id="locationDisplay"><span></span> City, Country</h2>
 
     <div class="info-section">
       <!-- Weather Section -->
@@ -37,17 +40,35 @@
 
           <div>
             <p>Temperature</p>
-            <p></p>
+            <p id="temperature"></p>
+            <p id="apparent-temperature"></p>
           </div>
 
-          <div>
+          <div class="weather-info">
             <p>Humidity</p>
-            <p></p>
+            <p id="humidity"></p>
+            <div>
+              <p>Dew Point</p>
+              <p id="dew-point"></p>
+            </div>
           </div>
 
-          <div>
+          <div class="weather-info">
             <p>Wind</p>
-            <p></p>
+            <p id="wind"></p>
+            <div>
+              <p>Direction</p>
+              <p id="direction"></p>
+            </div>
+          </div>
+
+          <div class="weather-info">
+            <p>Pressure</p>
+            <p id="pressure"></p>
+            <div>
+              <p>Visibility</p>
+              <p id="visibility"></p>
+            </div>
           </div>
         </div>
       </section>
@@ -58,7 +79,20 @@
 
         <div class="city-insight-info">
           <div>
-            <p>Geographic Location</p>
+            <p>Geographic Coordinates</p>
+            <p id="coordinates"></p>
+            <p id="elevation"></p>
+          </div>
+
+          <div>
+            <p>Country & Region</p>
+            <p id="location"></p>
+            <p id="timezone"></p>
+          </div>
+
+          <div>
+            <p>Demographics </p>
+            <p id="population"></p>
           </div>
         </div>
 
