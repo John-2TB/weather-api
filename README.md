@@ -88,6 +88,7 @@ AETHERIS then updates the interface with the retrieved information.
 AETHERIS/
 │
 ├── public/
+|   ├── images/
 │   ├── cloudy.mp4
 │   ├── rain.mp4
 │   ├── storm.mp4
@@ -123,15 +124,15 @@ You can open `index.html` directly in your browser or use a development server s
 ## 🌐 Live Demo
 
 **Live Site:**
-Add your Render deployment URL here.
+https://aetheris-dp98.onrender.com/
 
 ## 📸 Preview
 
 Add screenshots of AETHERIS here.
 
-```text
-[ AETHERIS Screenshot ]
-```
+![Preview-1](public/images/aetheris-preview-1.png)
+![Preview-2](public/images/aetheris-preview-2.png)
+![Preview-3](public/images/aetheris-preview-3.png)
 
 ## 🧠 What I Learned
 
