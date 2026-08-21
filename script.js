@@ -1,5 +1,6 @@
 const weatherApi = 'https://api.open-meteo.com/v1/forecast';
 const geoLocationApi = 'https://geocoding-api.open-meteo.com/v1/search';
+const reverseGeoApi = 'https://nominatim.openstreetmap.org/reverse';
 
 // ====================================
 // DOM Structures
@@ -45,8 +46,13 @@ headerVideo.play()
 // ====================================
 requestedLocation.addEventListener('keydown', (e)=>{
       if(e.key === 'Enter'){
+
+        if (!searchResults.length) {
+          return;
+        }
+
         suggestions.innerHTML = ``;
-        suggestions.style.display = 'block';
+        suggestions.style.display = 'none';
         getLocationInsights(searchResults[0]);
         console.log(`${e.key} was pressed`)
       }
@@ -92,6 +98,19 @@ async function searchLocation() {
 
     const data = await response.json();
 
+    if(!data.results || data.results.length === 0) {
+      welcomeMessage.innerHTML = `
+        <h2>No location found</h2>
+      `;
+
+      locationDisplay.style.display = 'none'
+      document.querySelector('.info-section').style.display = 'none';
+
+      searchResults = [];
+
+      return;
+    }
+
     searchResults = data.results;
 
     suggestions.innerHTML = ``;
@@ -126,29 +145,40 @@ async function searchLocation() {
     // }
 
     console.log(`An error occured: ${error}`);
+
+    showError(
+      error.message || 'Unable to search for that location.'
+    );
   }
 }
 
 // Location function
 async function getLocationInsights(data) {
   loaderContainer.style.display = 'flex';
-  welcomeMessage.style.display = 'none';
-  locationDisplay.style.display = 'block';
-  document.querySelector('.info-section').style.display = 'grid';
 
   try {
+
+    welcomeMessage.style.display = 'none';
+    locationDisplay.style.display = 'block';
+    document.querySelector('.info-section').style.display = 'grid';
+
+    const locationName = data.name || 'Unknown location';
+    const countryName = data.country || 'Unknown country';
+
     locationDisplay.innerHTML = `
-      <span></span> ${data.name}, ${data.country}
+      <span></span> ${locationName}, ${countryName}
     `;
     coordinatesDisplay.innerHTML = `${data.latitude}<sup>&deg;</sup>, ${data.longitude}<sup>&deg;</sup>`;
-    elevationDisplay.textContent = `Elevation: ${data.elevation}`;
+    elevationDisplay.textContent = `Elevation: ${data.elevation ?? 'Unavailable'}`;
     cityLocation.textContent = `${data.name}, ${data.country}`;
-    population.textContent = `Population: ${data.population}`
+    population.textContent = `Population: ${data.population ?? 'Unavailable'}`
 
     await getWeatherInfo(data.latitude, data.longitude)
 
   } catch (error) {
     console.log(`An error occured: ${error}`);
+
+    showError(error.message);
   } finally {
     loaderContainer.style.display = 'none';
   }
@@ -165,11 +195,30 @@ async function getWeatherInfo(latitude, longitude) {
     const response = await fetch(`${weatherApi}?${params}`);
 
     if(!response.ok) {
-      throw new Error('Something went wrong. Please try again later.');
+      if (response.status === 400) {
+        throw new Error('Invalid location coordinates.');
+      }
 
-    }
+      if (response.status === 429) {
+        throw new Error(
+          'Too many weather requests. Please try again later.'
+        );
+      }
+
+      if (response.status >= 500) {
+        throw new Error(
+          'The weather service is currently unavailable.'
+        );
+      }
+
+      throw new Error('Something went wrong. Please try again later.');
+    };
 
     const data = await response.json()
+
+    if(!data.current) {
+      throw new Error('Weather information is unavailabe for this locatin.')
+    }
 
     temperatureDisplay.innerHTML = `${data.current.temperature_2m}<sup>&deg;C</sup>`;
     apparentTemperatureDisplay.innerHTML = `Feels like ${data.current.apparent_temperature}<sup>&deg;C</sup>`;
@@ -184,7 +233,130 @@ async function getWeatherInfo(latitude, longitude) {
 
   } catch (error) {
     console.log(`An error occured: ${error}`);
+    console.error(`Weather error: ${error}`);
+
+    throw error;
   }
+}
+
+// Reverse Geocoding API function
+async function reverseGeocoding(latitude, longitude) {
+  const params = new URLSearchParams();
+  params.set('lat', latitude);
+  params.set('lon', longitude);
+  params.set('format', 'jsonv2');
+  params.set('addressdetails', '1');
+
+  try {
+    // ====================================
+    // Nominatim Reverse Geocoding
+    // ====================================
+
+    const response = await fetch(`${reverseGeoApi}?${params}`);
+  
+    if(!response.ok){
+      throw new Error('Reverse geocoding failed.')
+    }
+
+    const data = await response.json();
+
+    console.log('Reverse Geocoding')
+    console.log(data);
+
+    const city = 
+    data.address.city ||
+    data.address.town ||
+    data.address.village ||
+    data.address.municipality;
+
+    if (!city){
+      throw new Error('Unable to determine the name of your location.')
+    }
+    if (!data.address.country_code){
+      throw new Error('Unable to determine your country.')
+    }
+
+    // ====================================
+    // Open-Meteo Geocoding
+    // ====================================
+    const locationParam = new URLSearchParams();
+    locationParam.set('name', city);
+    locationParam.set('countryCode', data.address.country_code.toUpperCase());
+
+    const locationResponse = await fetch(`${geoLocationApi}?${locationParam}`);
+
+    if(!locationResponse.ok){
+      throw new Error('GeoLocation API failed');
+    }
+
+    const locationData = await locationResponse.json();
+    console.log(locationData)
+
+    if(!locationData.results || locationData.results.length === 0) {
+      throw new Error(`Weather data for ${city}, ${data.address.country} is unavailable.`)
+    };
+
+    await getLocationInsights(locationData.results[0])
+
+  } catch (error) {
+    console.log(`An error occured: ${error}`);
+    console.error(`An error occured: ${error}`);
+
+    showError(error.message);
+  }
+}
+
+
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    // locationDisplay.style.display = 'block';
+    // welcomeMessage.style.display = 'none';
+    // document.querySelector('.info-section').style.display = 'grid';
+
+    reverseGeocoding(position.coords.latitude, position.coords.longitude);
+
+  }, 
+  (error) => {
+    console.error(`Geolocation error: ${error}`);
+
+     if (error.code === 1) {
+      showError(
+        'Location permission was denied. Search for a city manually.'
+      );
+
+    } else if (error.code === 2) {
+      showError(
+        'Your location could not be determined. Search for a city manually.'
+      );
+
+    } else if (error.code === 3) {
+      showError(
+        'Location request timed out. Search for a city manually.'
+      );
+
+    } else {
+      showError(
+        'Unable to determine your location. Search for a city manually.'
+      );
+    }
+  }
+);
+
+
+// Error funtion
+function showError(message) {
+  console.error(message);
+
+  loaderContainer.style.display = 'none';
+
+  welcomeMessage.style.display = 'block';
+  welcomeMessage.innerHTML = `
+    <h2>Something went wrong</h2>
+    <p>${message}</p>
+  `;
+
+  locationDisplay.style.display = 'none';
+  document.querySelector('.info-section').style.display = 'none';
 }
 
 
@@ -203,7 +375,7 @@ function changeVideo(){
 
   if(headerVideo) {
     headerVideo.src = videoSrc[currentIndex];
-    console.log(`Switched to: ${videoSrc[currentIndex]}`);
+    // console.log(`Switched to: ${videoSrc[currentIndex]}`);
 
     currentIndex = (currentIndex + 1) % videoSrc.length;
 
